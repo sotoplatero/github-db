@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid');
-var randomstring = require("randomstring");
 const { Octokit } = require("@octokit/rest");
 
 /* export our lambda function as named "handler" export */
