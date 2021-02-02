@@ -5,31 +5,23 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Github DB</title>
-        <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+        <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>      
-        <style type="text/css">
-            :root { 
-                --grid-maxWidth: 60rem;
-            }    
-        </style>
     </head>
     <body 
       x-data="setup()" 
       x-init="init()"
-      class="container"
+      class="w-2/6 mx-auto"
     >
-        <div class="tabs">
-          <a class="active" href="/">🏠 Inicio</a>
-          <a  href="/index1.html" >💾 Ejemplo 1</a>
-        </div>        
       <div class="text-center">
         <h1>Todos</h1>
-        <p>Ejemplo de como utilizar Github como base de datos. <a href="/index1.html">Ejemplo CRUD</a></p>
+        <p>Ejemplo de como utilizar Github como base de datos</p>
       </div>
         <input 
             id="input__todos" 
             type="text" 
             placeholder="Enter Todo"
+            class="p-3 ring-0 w-full appearance-none"
             x-model="task"
             x-on:keydown.enter="
                 fetch( '/api/create' , {
@@ -50,10 +42,14 @@
                 return {
                     task: '',
                     todos: [],
-                    init() {
-                        fetch('/api/all')
-                            .then( res => res.json() )
-                            .then( json => this.todos = json );
+                    loading: false,
+                    async init() {
+                        this.loading = true
+                        let response = await fetch('/api/all')
+                        if (response.ok) {
+                            this.todos = await response.json()
+                        }
+                        this.loading = false
                     }
                 }
             }

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Github DB</title>
+        <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>      
+        <style type="text/css">
+            :root { 
+                --grid-maxWidth: 60rem;
+            }    
+        </style>
+    </head>
+    <body 
+      x-data="setup()" 
+      x-init="init()"
+      class="container"
+    >
+      <div class="text-center">
+        <div class="tabs">
+          <a  href="/">🏠 Inicio</a>
+          <a  class="active" href="/index1.html" >💾 Ejemplo 1</a>
+        </div>             
+        <h1>Todos</h1>
+        <p>Ejemplo de como utilizar Github como base de datos</p>
+        <p>Hecho con 🖐 y ❤ en 🏠 por 😎<a href="https://twitter.com/sotoplatero">@sotoplatero</a></p>
+        <p><a href="https://github.com/sotoplatero/github-like-db-alpinejs">code</a></p>
+      </div>
+      <p>
+        <input 
+            id="input__todos" 
+            type="text" 
+            class="success"
+            placeholder="Enter Todo"
+            x-model="task"
+            x-on:keydown.enter="add()"
+        >
+      </p>
+        <div>
+            <template x-for="todo in todos" :key="todo.id">
+               <div class="row">
+                    <div class="col-1 text-left is-vertical-align">
+                       <input 
+                           type="checkbox"
+                           x-bind:checked="todo.done"
+                           x-model="todo.done"
+                           x-on:click="update({...todo, done: !todo.done})"
+                        >
+                    </div>
+
+                   <input 
+                       x-model="todo.title"
+                       x-on:keydown.enter="update(todo)" 
+                       class="col-10 ">
+
+                   <button
+                        class="button clear text-error pull-right is-paddingless col-1 text-right" 
+                        x-on:click="remove(todo.id)"
+                   >✖</button>
+               </div>
+            </template>  
+        </div>
+        <script>
+            function setup() {
+                return {
+                    task: '',
+                    todos: [],
+                    async init() {
+                        let response = await fetch( '/api/all' )
+                        this.todos = await response.json();
+                    },
+                    async add(){
+                        let response = await fetch( '/api/create' , {
+                            method: 'POST',
+                            body: JSON.stringify({ title: this.task })
+                        })
+                        this.todos = await response.json()
+                        this.task = ''
+                    },                   
+                    async remove(id) {
+                        let response = await fetch( '/api/delete', { 
+                            method: 'POST', 
+                            body: JSON.stringify({ id: id }) 
+                        });
+                        this.todos = await response.json();
+                    },
+                    async update(todo) {
+                        let response = await fetch( '/api/update', { 
+                            method: 'POST', 
+                            body: JSON.stringify(todo) 
+                        });
+                        this.todos = await response.json();
+                    },
+                };
+            }
+        </script>
+    </body>
+</html>
