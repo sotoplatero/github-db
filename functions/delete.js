@@ -17,10 +17,12 @@ exports.handler = async function(event, context) {
   });
 
   // decodificar el json
-  let todos = Buffer.from(data.content, 'base64').toString('utf8') 
+  let todosString = Buffer.from(data.content, 'base64').toString('utf8') 
 
   // eliminar el todo 
-  todos = JSON.parse(todos).filter( el => el.id != id );
+  todos = JSON.parse(todosString);
+  todoIndex = todos.findIndex( el => el.id === id );
+  todos.splice( todoIndex, 1)  
 
   var fileContent = Buffer.from( JSON.stringify( todos ), 'utf8' ).toString('base64') 
 
