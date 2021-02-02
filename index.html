@@ -6,8 +6,53 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Github DB</title>
         <link rel="stylesheet" href="https://unpkg.com/chota@latest">
-        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>        
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>      
+        <style type="text/css">
+            :root { 
+                --grid-maxWidth: 60rem;
+            }    
+        </style>
     </head>
-    <body>
+    <body 
+      x-data="setup()" 
+      x-init="init()"
+      class="container"
+    >
+      <div class="text-center">
+        <h1>Todos</h1>
+        <p>Ejemplo de como utilizar Github como base de datos</p>
+      </div>
+        <input 
+            id="input__todos" 
+            type="text" 
+            placeholder="Enter Todo"
+            x-model="task"
+            x-on:keydown.enter="
+                fetch( '/api/create' , {
+                    method: 'POST',
+                    body: JSON.stringify({ title: task })
+                })
+                .then( response => response.json() )
+                .then( json => todos = json )        
+            "
+        >
+        <ul>
+            <template x-for="todo in todos" :key="todo.id">
+               <li x-text="todo.title"></li>
+            </template>  
+        </ul>
+        <script>
+            function setup() {
+                return {
+                    task: '',
+                    todos: [],
+                    init() {
+                        fetch('/api/all')
+                            .then( res => res.json() )
+                            .then( json => this.todos = json );
+                    }
+                }
+            }
+        </script>
     </body>
 </html>
